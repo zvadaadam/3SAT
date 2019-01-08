@@ -47,7 +47,7 @@ func Parse(r io.Reader) (Formula, error) {
 				return Formula{}, err
 			}
 
-			formula.AddClauses(clauses, numClauses, numLiterals)
+			formula.AddClauses(clauses, numLiterals, numClauses)
 		default:
 			return Formula{}, fmt.Errorf("invalid start of line character: %q", string(token[0]))
 

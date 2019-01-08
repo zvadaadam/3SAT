@@ -33,9 +33,9 @@ func main() {
 	var tournamentSize = 10
 	var mutationRate float32 = 0.2
 
-	genetic.Solve(formula, numGenerations, populationSize, tournamentSize, mutationRate)
+	solution := genetic.Solve(formula, numGenerations, populationSize, tournamentSize, mutationRate)
 
-	fmt.Print(formula)
+	fmt.Print(solution)
 
 	return
 }
