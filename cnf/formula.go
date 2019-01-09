@@ -28,17 +28,20 @@ func (f *Formula) Satisfied(variables []bool) (int, int) {
 			literal := f.Clauses[i][j]
 			literalIndex := abs(literal) - 1
 
-			weight := f.Weights[literalIndex]
 			variable := variables[literalIndex]
-
 			if evalLiteral(literal, variable) {
-				sumWeights = sumWeights + weight
 				isClauseSatisfied = true
 			}
 		}
 
 		if !isClauseSatisfied {
 			sumNotSatsfiedClauses = sumNotSatsfiedClauses - 1
+		}
+	}
+
+	for i, weight := range f.Weights {
+		if variables[i] {
+			sumWeights = sumWeights + weight
 		}
 	}
 

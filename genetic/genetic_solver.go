@@ -29,5 +29,19 @@ func Solve(formula cnf.Formula, numGenerations int, populationSize int, tourname
 	fmt.Print("____________________________________________\n")
 	fmt.Printf("FINAL FITNESS: %d\n", population.chromosomes[0].EvaluateFitness(formula))
 
+	var sumWeights = 0
+	for _, val := range formula.Weights {
+		sumWeights = sumWeights + val
+	}
+	fmt.Print(sumWeights)
+
+	sumWeights = 0
+	for i, weight := range formula.Weights {
+		if population.chromosomes[0].Genomes[i] {
+			sumWeights = sumWeights + weight
+		}
+	}
+	fmt.Print(sumWeights)
+
 	return population.chromosomes[0].Genomes
 }

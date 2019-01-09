@@ -28,9 +28,9 @@ func main() {
 		return
 	}
 
-	var numGenerations = 1000
-	var populationSize = 50
-	var tournamentSize = 10
+	var numGenerations = 10000
+	var populationSize = 500
+	var tournamentSize = 100
 	var mutationRate float32 = 0.8
 
 	solution := genetic.Solve(formula, numGenerations, populationSize, tournamentSize, mutationRate)
