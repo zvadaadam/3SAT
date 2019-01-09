@@ -12,7 +12,7 @@ func main() {
 	fmt.Print("HELLO WORLD\n")
 
 	// TODO: change to run arugument
-	filePath := "/Users/adamzvada/go/src/SAT/input/dimacs_1.txt"
+	filePath := "/Users/adamzvada/go/src/SAT/input/dimacs_2.txt"
 
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -28,10 +28,10 @@ func main() {
 		return
 	}
 
-	var numGenerations = 100
+	var numGenerations = 1000
 	var populationSize = 50
 	var tournamentSize = 10
-	var mutationRate float32 = 0.2
+	var mutationRate float32 = 0.8
 
 	solution := genetic.Solve(formula, numGenerations, populationSize, tournamentSize, mutationRate)
 

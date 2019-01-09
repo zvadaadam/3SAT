@@ -2,21 +2,23 @@ package cnf
 
 type Formula struct {
 	Clauses [][]int
+	Weights []int
 	NumClauses int
 	NumVariables int
 }
 
-func (f *Formula) AddClauses(clauses [][]int, numVariables int, numClauses int) {
-
+func (f *Formula) AddClauses(clauses [][]int, weights []int, numVariables int, numClauses int) {
 	f.Clauses = clauses
+	f.Weights = weights
 	f.NumClauses = numClauses
 	f.NumVariables = numVariables
 }
 
 
-func (f *Formula) Satisfied(variables []bool) (bool, int) {
+func (f *Formula) Satisfied(variables []bool) (int, int) {
 
-	var sumTrues = 0
+	var sumWeights = 0
+	var sumNotSatsfiedClauses = 0
 
 	for i := 0; i < f.NumClauses; i++ {
 
@@ -24,20 +26,23 @@ func (f *Formula) Satisfied(variables []bool) (bool, int) {
 		var variablesInClause = len(f.Clauses[i])
 		for j := 0; j < variablesInClause; j++ {
 			literal := f.Clauses[i][j]
-			variable := variables[abs(literal) - 1]
+			literalIndex := abs(literal) - 1
+
+			weight := f.Weights[literalIndex]
+			variable := variables[literalIndex]
 
 			if evalLiteral(literal, variable) {
-				sumTrues = sumTrues + 1
+				sumWeights = sumWeights + weight
 				isClauseSatisfied = true
 			}
 		}
 
 		if !isClauseSatisfied {
-			return false, 0
+			sumNotSatsfiedClauses = sumNotSatsfiedClauses - 1
 		}
 	}
 
-	return true, sumTrues
+	return sumNotSatsfiedClauses, sumWeights
 }
 
 func evalLiteral(literal int, variable bool) bool {

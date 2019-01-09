@@ -32,6 +32,7 @@ func Parse(r io.Reader) (Formula, error) {
 				numLiterals = 0
 				numClauses = 0
 				clauses = [][]int{}
+				weights = []int{}
 				err error = nil
 			)
 
@@ -43,11 +44,11 @@ func Parse(r io.Reader) (Formula, error) {
 				return Formula{}, fmt.Errorf("Error on Number of Clauses: %q", fields[3])
 			}
 
-			if clauses, err = parseForumula(scanner, numClauses, numLiterals); err != nil {
+			if clauses, weights, err = parseForumula(scanner, numClauses, numLiterals); err != nil {
 				return Formula{}, err
 			}
 
-			formula.AddClauses(clauses, numLiterals, numClauses)
+			formula.AddClauses(clauses, weights, numLiterals, numClauses)
 		default:
 			return Formula{}, fmt.Errorf("invalid start of line character: %q", string(token[0]))
 
@@ -57,9 +58,33 @@ func Parse(r io.Reader) (Formula, error) {
 	return formula, nil
 }
 
-func parseForumula(scanner *bufio.Scanner, numClauses int, numLiterals int) ([][]int, error) {
+func parseForumula(scanner *bufio.Scanner, numClauses int, numLiterals int) ([][]int, []int, error) {
 
 	clauses := make([][]int, 0)
+	weights := make([]int, 0)
+
+	scanner.Scan()
+	token := scanner.Bytes()
+	fields := bytes.Fields(token)
+
+	if string(fields[0]) != "w" {
+		return clauses, weights, fmt.Errorf("Error - Missing weights row!")
+	}
+
+	for _, field := range fields[1:] {
+		var err error
+		var weight = 0
+		if weight, err = strconv.Atoi(string(field)); err != nil {
+			return clauses, weights, fmt.Errorf("Error expecting integer weight: %q", weight)
+		}
+
+		weights = append(weights, weight)
+	}
+
+	if len(weights) != numLiterals {
+		return clauses, weights, fmt.Errorf("Number of Weights should be to number of literals")
+	}
+
 	for scanner.Scan() {
 		var err error
 		token := scanner.Bytes()
@@ -69,11 +94,11 @@ func parseForumula(scanner *bufio.Scanner, numClauses int, numLiterals int) ([][
 		for _, field := range fields {
 			var val = 0
 			if val, err = strconv.Atoi(string(field)); err != nil {
-				return clauses, fmt.Errorf("Error expecting integer literal: %q", val)
+				return clauses, weights, fmt.Errorf("Error expecting integer literal: %q", val)
 			}
 
 			if val > numClauses {
-				return clauses, fmt.Errorf("Literal identifier exceecds max value: %q", val)
+				return clauses, weights, fmt.Errorf("Literal identifier exceecds max value: %q", val)
 			}
 
 			if val != 0 {
@@ -84,5 +109,5 @@ func parseForumula(scanner *bufio.Scanner, numClauses int, numLiterals int) ([][
 		clauses = append(clauses, literals)
 	}
 
-	return clauses, nil
+	return clauses, weights, nil
 }

@@ -23,10 +23,10 @@ func NewChromosome(numGenomes int) *Chromosome {
 
 func (ch *Chromosome) EvaluateFitness(formula cnf.Formula) int {
 
-	satisfied, sumTrues := formula.Satisfied(ch.Genomes)
+	sumOfNotStatisfied, sumTrues := formula.Satisfied(ch.Genomes)
 
-	if satisfied == false {
-		return 0
+	if sumOfNotStatisfied < 0 {
+		return sumOfNotStatisfied
 	}
 
 	return sumTrues
