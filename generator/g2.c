@@ -81,7 +81,7 @@ int	main(int argc, char	*argv[])
 
 	/* free alocated mem */
 	free(weights);
-	return;
+	return 0;
 }
 
 /* memory allocation to matrixes s.t. n variables m clauses with at most size k */

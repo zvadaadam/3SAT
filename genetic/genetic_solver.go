@@ -5,23 +5,37 @@ import (
 	"fmt"
 )
 
-func Solve(formula cnf.Formula, numGenerations int, populationSize int, tournamentSize int, mutationRate float32) ([]bool) {
+func Solve(formula cnf.Formula, numGenerations int, populationSize int, elitismSize int, randomSize int, tournamentSize int, mutationRate float32) ([]bool) {
 
 	// Init population
-	population := NewPopulation(populationSize, formula.NumVariables)
+	population := NewRandomPopulation(populationSize, formula.NumVariables)
 
 	for i := 0; i < numGenerations; i++ {
 
-		parentChromosomeA, parentChromosomeB := population.SelectionTournament(formula, tournamentSize)
+		newPopulation := NewRandomPopulation(randomSize, formula.NumVariables)
 
-		childChromosome := parentChromosomeA.Crossover(&parentChromosomeB)
+		fittests := population.FittestIndividuals(elitismSize, formula)
 
-		childChromosome.Mutation(mutationRate)
+		for _, individual := range fittests {
+			newPopulation.AppendChromosome(individual)
+		}
 
-		population.RemoveWeakest(formula)
+		numChilds := populationSize - randomSize - elitismSize
+		if numChilds <= 0 {
+			fmt.Print("No more breeding, no more life...")
+			return []bool{}
+		}
 
-		population.AppendChromosome(childChromosome)
-		fmt.Printf("Fitness of Child = %d\n", childChromosome.EvaluateFitness(formula))
+		for i := 0; i < numChilds; i++ {
+			parentChromosomeA, parentChromosomeB := population.SelectionTournament(formula, tournamentSize)
+			childChromosome := parentChromosomeA.Crossover(&parentChromosomeB)
+			childChromosome.Mutation(mutationRate)
+			newPopulation.AppendChromosome(childChromosome)
+
+			population = newPopulation
+		}
+
+		fmt.Printf("Fitness of Child = %d\n", population.FittestIndividuals(1, formula)[0].EvaluateFitness(formula))
 	}
 
 	population.chromosomes = sortByFitness(population.chromosomes, formula)

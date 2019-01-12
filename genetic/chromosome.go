@@ -48,6 +48,23 @@ func (ch *Chromosome) Crossover(chromosomeB *Chromosome) Chromosome {
 	return Chromosome{Genomes: child}
 }
 
+func (ch *Chromosome) CrossoverTwoPoint(chromosomeB *Chromosome) Chromosome {
+	numGenomes := len(ch.Genomes)
+	pivotOne := rand.Intn(numGenomes)
+	pivotTwo := rand.Intn(numGenomes)
+
+	child := make([]bool, numGenomes)
+	for i := 0; i < numGenomes; i++ {
+		if i < pivotOne && i > pivotTwo{
+			child[i] = ch.Genomes[i]
+		} else {
+			child[i] = chromosomeB.Genomes[i]
+		}
+	}
+
+	return Chromosome{Genomes: child}
+}
+
 func (ch * Chromosome) Mutation(mutationRate float32) {
 
 	if rand.Intn(100) <= int(mutationRate*100) {

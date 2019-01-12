@@ -11,7 +11,7 @@ type Population struct {
 	chromosomes []Chromosome
 }
 
-func NewPopulation(populationSize int, numGenomes int) *Population {
+func NewRandomPopulation(populationSize int, numGenomes int) *Population {
 	population := new(Population)
 
 	chromosomes := make([]Chromosome, 0)
@@ -23,6 +23,12 @@ func NewPopulation(populationSize int, numGenomes int) *Population {
 	population.chromosomes = chromosomes
 
 	return population
+}
+
+func (p *Population) AppendPopolation(chromosome Chromosome) {
+
+
+
 }
 
 func (p *Population) SelectionTournament(formula cnf.Formula, tournamentSize int) (Chromosome, Chromosome) {
@@ -38,13 +44,30 @@ func (p *Population) SelectionTournament(formula cnf.Formula, tournamentSize int
 	return p.chromosomes[0], p.chromosomes[1]
 }
 
-func (p *Population) SelectionRoulette(formula cnf.Formula, tournamentSize int) (Chromosome, Chromosome) {
+func (p *Population) SelectionRoulette(formula cnf.Formula) Chromosome {
 
-	// TODO
+	var sumFitness = 0
+	for _, chromosome := range p.chromosomes {
+		sumFitness = sumFitness + chromosome.EvaluateFitness(formula)
+	}
 
-	return p.chromosomes[0], p.chromosomes[1]
+	var cursor = rand.Float32()*float32(sumFitness)
+	for _, chromosome := range p.chromosomes {
+		fitness := chromosome.EvaluateFitness(formula)
+		cursor = cursor - float32(fitness)
+		if cursor < 0 {
+			return chromosome
+		}
+	}
+
+	return p.chromosomes[len(p.chromosomes) - 1]
 }
 
+func (p *Population) FittestIndividuals(numIndividuals int, formula cnf.Formula) []Chromosome {
+	p.chromosomes = sortByFitness(p.chromosomes, formula)
+
+	return p.chromosomes[0:numIndividuals]
+}
 
 func (p *Population) RemoveWeakest(formula cnf.Formula) {
 	p.chromosomes = sortByFitness(p.chromosomes, formula)[:len(p.chromosomes)-1]
