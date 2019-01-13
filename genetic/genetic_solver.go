@@ -3,9 +3,11 @@ package genetic
 import (
 	"SAT/cnf"
 	"fmt"
+	"time"
 )
 
 func Solve(formula cnf.Formula, numGenerations int, populationSize int, elitismSize int, randomSize int, tournamentSize int, mutationRate float64) ([]bool) {
+	start := time.Now()
 
 	// Init population
 	population := NewRandomPopulation(populationSize, formula.NumVariables)
@@ -42,15 +44,14 @@ func Solve(formula cnf.Formula, numGenerations int, populationSize int, elitismS
 		}
 		//fmt.Printf("Fitness of Child = %d\n", population.FittestIndividuals(1, formula)[0].EvaluateFitness(formula))
 	}
+	elapsed := time.Since(start).Seconds()
 
 	//population.chromosomes = sortByFitness(population.chromosomes, formula)
-
 	//fmt.Print("____________________________________________\n")
 	//fmt.Printf("FINAL FITNESS: %d\n", population.chromosomes[0].EvaluateFitness(formula))
-
 	//return population.chromosomes[0].Genomes
 
-	fmt.Printf("%v", bestIndividual.EvaluateFitness(formula))
+	fmt.Printf("%v,%v\n", bestIndividual.EvaluateFitness(formula), elapsed)
 
 	return bestIndividual.Genomes
 }

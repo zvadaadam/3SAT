@@ -55,14 +55,22 @@ echo "mutation: $mutation"
 echo "repeat: $repeat"
 echo "__________________________________"
 
+
+cd ..
+echo "Build Go-SAT solver project..."
+go build main.go
+cd scripts
+
 rm -rf instance_data.csv
-printf -- "weight,duration,error\n" >> instance_data.csv
+printf -- "variables,clauses,fitness,duration\n" >> instance_data.csv
 
 for i in `seq 1 1 ${repeat}`; do
-    ../helper/generator $variables $clauses 100 > input
+    rm -rf input
+    ../helper/generator $variables $clauses 100 >> input
 
     echo "Running SAT Solver #${i} with ${variables} variables and ${clauses} clauses."
 
+    printf -- "${variables},${clauses}," >> instance_data.csv
     ../main -input "/Users/adamzvada/go/src/SAT/scripts/input" \
         -generation $generations \
         -population $population \
@@ -70,5 +78,7 @@ for i in `seq 1 1 ${repeat}`; do
         $elitism -tournament \
         $tournament -mutation \
         $mutation  \
-        > instance_data.csv
+        >> instance_data.csv
+
+    rm -rf input
 done
