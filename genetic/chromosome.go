@@ -65,7 +65,7 @@ func (ch *Chromosome) CrossoverTwoPoint(chromosomeB *Chromosome) Chromosome {
 	return Chromosome{Genomes: child}
 }
 
-func (ch * Chromosome) Mutation(mutationRate float32) {
+func (ch * Chromosome) Mutation(mutationRate float64) {
 
 	if rand.Intn(100) <= int(mutationRate*100) {
 		rndIndex := rand.Intn(len(ch.Genomes))

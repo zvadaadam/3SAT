@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-func Solve(formula cnf.Formula, numGenerations int, populationSize int, elitismSize int, randomSize int, tournamentSize int, mutationRate float32) ([]bool) {
+func Solve(formula cnf.Formula, numGenerations int, populationSize int, elitismSize int, randomSize int, tournamentSize int, mutationRate float64) ([]bool) {
 
 	// Init population
 	population := NewRandomPopulation(populationSize, formula.NumVariables)
@@ -28,7 +28,8 @@ func Solve(formula cnf.Formula, numGenerations int, populationSize int, elitismS
 
 		for i := 0; i < numChilds; i++ {
 			parentChromosomeA, parentChromosomeB := population.SelectionTournament(formula, tournamentSize)
-			childChromosome := parentChromosomeA.Crossover(&parentChromosomeB)
+			//childChromosome := parentChromosomeA.Crossover(&parentChromosomeB)
+			childChromosome := parentChromosomeA.CrossoverTwoPoint(&parentChromosomeB)
 			childChromosome.Mutation(mutationRate)
 			newPopulation.AppendChromosome(childChromosome)
 
@@ -47,7 +48,7 @@ func Solve(formula cnf.Formula, numGenerations int, populationSize int, elitismS
 	for _, val := range formula.Weights {
 		sumWeights = sumWeights + val
 	}
-	fmt.Print(sumWeights)
+	fmt.Printf("MAX weights: %v\n", sumWeights)
 
 	sumWeights = 0
 	for i, weight := range formula.Weights {
@@ -55,7 +56,8 @@ func Solve(formula cnf.Formula, numGenerations int, populationSize int, elitismS
 			sumWeights = sumWeights + weight
 		}
 	}
-	fmt.Print(sumWeights)
+	fmt.Printf("%v\n", sumWeights)
+
 
 	return population.chromosomes[0].Genomes
 }
