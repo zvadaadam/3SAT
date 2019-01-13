@@ -43,9 +43,7 @@ func main() {
 	var randomSize = *randomArg
 	var mutationRate = *mutationArg
 
-	solution := genetic.Solve(formula, numGenerations, populationSize, randomSize, elitismSize, tournamentSize, mutationRate)
-
-	fmt.Print(solution)
+	_ := genetic.Solve(formula, numGenerations, populationSize, randomSize, elitismSize, tournamentSize, mutationRate)
 
 	return
 }

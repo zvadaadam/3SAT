@@ -1,0 +1,74 @@
+#!/bin/bash
+
+# LOAD OPTIONS
+while getopts v:c:g:p:r:e:t:m:R:- opt
+do
+	case "$opt" in
+	v)
+	    variables="$OPTARG" # -v
+	;;
+
+	c)
+	    clauses="$OPTARG" # -c
+	;;
+
+	g)
+		generations="$OPTARG" # -g
+	;;
+
+	p)
+		population="$OPTARG" # -p
+	;;
+
+	r)
+		random="$OPTARG" # -r
+	;;
+
+	e)
+		elitism="$OPTARG" # -e
+	;;
+
+	t)
+		tournament="$OPTARG" # -t
+	;;
+
+	m)
+	    mutation="$OPTARG" # -m
+	;;
+	R)
+	    repeat="$OPTARG" # -m
+	;;
+	esac
+done
+shift "$(( OPTIND - 1 ))"
+
+
+echo "__________________________________"
+echo "variables: $variables"
+echo "clauses: $clauses"
+echo "generation: $generations"
+echo "population: $population"
+echo "random: $random"
+echo "elitism: $elitism"
+echo "tournament: $tournament"
+echo "mutation: $mutation"
+echo "repeat: $repeat"
+echo "__________________________________"
+
+rm -rf instance_data.csv
+printf -- "weight,duration,error\n" >> instance_data.csv
+
+for i in `seq 1 1 ${repeat}`; do
+    ../helper/generator $variables $clauses 100 > input
+
+    echo "Running SAT Solver #${i} with ${variables} variables and ${clauses} clauses."
+
+    ../main -input "/Users/adamzvada/go/src/SAT/scripts/input" \
+        -generation $generations \
+        -population $population \
+        -random $random -elitism \
+        $elitism -tournament \
+        $tournament -mutation \
+        $mutation  \
+        > instance_data.csv
+done

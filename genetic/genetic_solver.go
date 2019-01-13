@@ -9,7 +9,7 @@ func Solve(formula cnf.Formula, numGenerations int, populationSize int, elitismS
 
 	// Init population
 	population := NewRandomPopulation(populationSize, formula.NumVariables)
-
+	bestIndividual := population.chromosomes[0]
 	for i := 0; i < numGenerations; i++ {
 
 		newPopulation := NewRandomPopulation(randomSize, formula.NumVariables)
@@ -36,28 +36,21 @@ func Solve(formula cnf.Formula, numGenerations int, populationSize int, elitismS
 			population = newPopulation
 		}
 
-		fmt.Printf("Fitness of Child = %d\n", population.FittestIndividuals(1, formula)[0].EvaluateFitness(formula))
-	}
-
-	population.chromosomes = sortByFitness(population.chromosomes, formula)
-
-	fmt.Print("____________________________________________\n")
-	fmt.Printf("FINAL FITNESS: %d\n", population.chromosomes[0].EvaluateFitness(formula))
-
-	var sumWeights = 0
-	for _, val := range formula.Weights {
-		sumWeights = sumWeights + val
-	}
-	fmt.Printf("MAX weights: %v\n", sumWeights)
-
-	sumWeights = 0
-	for i, weight := range formula.Weights {
-		if population.chromosomes[0].Genomes[i] {
-			sumWeights = sumWeights + weight
+		bestIndividualPopulation := population.FittestIndividuals(1, formula)[0]
+		if bestIndividual.EvaluateFitness(formula) < bestIndividualPopulation.EvaluateFitness(formula) {
+			bestIndividual = bestIndividualPopulation
 		}
+		//fmt.Printf("Fitness of Child = %d\n", population.FittestIndividuals(1, formula)[0].EvaluateFitness(formula))
 	}
-	fmt.Printf("%v\n", sumWeights)
 
+	//population.chromosomes = sortByFitness(population.chromosomes, formula)
 
-	return population.chromosomes[0].Genomes
+	//fmt.Print("____________________________________________\n")
+	//fmt.Printf("FINAL FITNESS: %d\n", population.chromosomes[0].EvaluateFitness(formula))
+
+	//return population.chromosomes[0].Genomes
+
+	fmt.Printf("%v", bestIndividual.EvaluateFitness(formula))
+
+	return bestIndividual.Genomes
 }
