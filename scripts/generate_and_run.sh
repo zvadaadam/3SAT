@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # LOAD OPTIONS
-while getopts v:c:g:p:r:e:t:m:R:- opt
+while getopts v:c:g:p:r:e:t:m:R:f:- opt
 do
 	case "$opt" in
 	v)
@@ -38,6 +38,9 @@ do
 	R)
 	    repeat="$OPTARG" # -m
 	;;
+	f)
+	    input_folder="$OPTARG" # -m
+	;;
 	esac
 done
 shift "$(( OPTIND - 1 ))"
@@ -53,6 +56,7 @@ echo "elitism: $elitism"
 echo "tournament: $tournament"
 echo "mutation: $mutation"
 echo "repeat: $repeat"
+echo "input_folder: $input_folder"
 echo "__________________________________"
 
 
@@ -65,13 +69,17 @@ rm -rf instance_data.csv
 printf -- "variables,clauses,fitness,duration\n" >> instance_data.csv
 
 for i in `seq 1 1 ${repeat}`; do
-    rm -rf input
-    ../helper/generator $variables $clauses 100 >> input
+
+    if [ $input_folder == "/Users/adamzvada/go/src/SAT/scripts" ]
+    then
+        rm -rf input-${i}
+        ../helper/generator $variables $clauses 100 >> "input-${i}"
+    fi
 
     echo "Running SAT Solver #${i} with ${variables} variables and ${clauses} clauses."
 
     printf -- "${variables},${clauses}," >> instance_data.csv
-    ../main -input "/Users/adamzvada/go/src/SAT/scripts/input" \
+    ../main -input "${input_folder}/input-${i}" \
         -generation $generations \
         -population $population \
         -random $random -elitism \
